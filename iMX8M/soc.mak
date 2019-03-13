@@ -94,7 +94,7 @@ u-boot-ddr3l.itb: $(dtbs_ddr3l)
 	TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_ddr3l) > u-boot-ddr3l.its
 	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr3l.its u-boot-ddr3l.itb
 
-dtbs_ddr4 = fsl-$(PLAT)-ddr4-$(VAL_BOARD).dtb
+dtbs_ddr4 = fsl-$(PLAT)-evk.dtb
 u-boot-ddr4.itb: $(dtbs_ddr4)
 	./$(PAD_IMAGE) bl31.bin
 	TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_ddr4) > u-boot-ddr4.its
