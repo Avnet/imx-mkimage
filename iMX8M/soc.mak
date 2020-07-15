@@ -43,7 +43,7 @@ FW_DIR = imx-boot/imx-boot-tools/$(PLAT)
 ifeq ($(SOC),iMX8MM)
 DTBS_DDR4_EMBEST = maaxboard-mini.dtb
 else
-DTBS_DDR4_EMBEST = em-sbc-imx8m.dtb
+DTBS_DDR4_EMBEST = maaxboard.dtb
 endif
 
 $(MKIMG): mkimage_imx8.c
