@@ -181,6 +181,18 @@ u-boot-ddr4-evk.itb: $(dtbs_ddr4_evk)
 	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
 	@rm -f u-boot.its $(dtbs_ddr4_evk)
 
+dtbs_maaxboard_nano = maaxboard_nano.dtb
+$(dtbs_maaxboard_nano):
+	./$(DTB_PREPROC) maaxboard-nano-mipi.dtb $(dtbs_maaxboard_nano)
+
+u-boot-maaxboard-nano.itb: $(dtbs_maaxboard_nano)
+	./$(PAD_IMAGE) tee.bin
+	./$(PAD_IMAGE) bl31.bin
+	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_maaxboard_nano)
+	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_maaxboard_nano) > u-boot-ddr4-evk.its
+	./mkimage_uboot -E -p 0x3000 -f u-boot-maaxboard-nano.itb.its u-boot-maaxboard-nano.itb.itb
+	@rm -f u-boot.its $(dtbs_maaxboard_nano)
+
 ifeq ($(HDMI),yes)
 flash_evk: $(MKIMG) signed_hdmi_imx8m.bin u-boot-spl-ddr.bin u-boot.itb
 	./mkimage_imx8 -fit -signed_hdmi signed_hdmi_imx8m.bin -loader u-boot-spl-ddr.bin $(SPL_LOAD_ADDR) -second_loader u-boot.itb 0x40200000 0x60000 -out $(OUTIMG)
@@ -264,6 +276,13 @@ print_fit_hab_ddr4: u-boot-nodtb.bin bl31.bin $(dtbs_ddr4_evk)
 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_ddr4_evk)
 	TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) VERSION=$(VERSION) ./print_fit_hab.sh $(PRINT_FIT_HAB_OFFSET) $(dtbs_ddr4_evk)
 	@rm -f $(dtbs_ddr4_evk)
+
+print_fit_hab_ddr4: u-boot-nodtb.bin bl31.bin $(dtbs_maaxboard_nano)
+	./$(PAD_IMAGE) tee.bin
+	./$(PAD_IMAGE) bl31.bin
+	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_maaxboard_nano)
+	TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) VERSION=$(VERSION) ./print_fit_hab.sh $(PRINT_FIT_HAB_OFFSET) $(dtbs_maaxboard_nano)
+	@rm -f $(dtbs_maaxboard_nano)
 
 print_fit_hab_flexspi: u-boot-nodtb.bin bl31.bin $(dtbs)
 	./$(PAD_IMAGE) tee.bin
